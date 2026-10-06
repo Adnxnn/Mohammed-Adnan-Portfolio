@@ -21,3 +21,7 @@ const progress=q('.scroll-progress');
 const paintProgress=()=>{if(!progress)return;const max=document.documentElement.scrollHeight-innerHeight;progress.style.width=(max>0?scrollY/max*100:0)+'%'};
 addEventListener('scroll',paintProgress,{passive:true});paintProgress();
 qa('.hero h1 .hero-line,.hero h1 em').forEach((el,i)=>{el.animate([{opacity:0,transform:'translateY(34px)',filter:'blur(8px)'},{opacity:1,transform:'translateY(0)',filter:'blur(0)'}],{duration:900,delay:180+i*110,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'})});
+
+const scrollProgress=q('.scroll-progress');
+const updateScrollProgress=()=>{if(!scrollProgress)return;const d=document.documentElement.scrollHeight-innerHeight;scrollProgress.style.width=(d>0?scrollY/d*100:0)+'%'};
+addEventListener('scroll',updateScrollProgress,{passive:true});updateScrollProgress();
