@@ -1,6 +1,11 @@
 const q=(s,c=document)=>c.querySelector(s),qa=(s,c=document)=>[...c.querySelectorAll(s)];
-const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});
-qa('.reveal').forEach(el=>observer.observe(el));
+const reveals=qa('.reveal');
+// Content must never depend on animation support. Reveal is progressive enhancement only.
+if('IntersectionObserver' in window){
+ const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:.06,rootMargin:'0px 0px 80px 0px'});
+ reveals.forEach(el=>observer.observe(el));
+ setTimeout(()=>reveals.forEach(el=>el.classList.add('visible')),1400);
+}else{reveals.forEach(el=>el.classList.add('visible'))}
 const glow=q('.cursor-glow');window.addEventListener('pointermove',e=>{if(glow){glow.style.left=e.clientX+'px';glow.style.top=e.clientY+'px'}});
 qa('.tilt').forEach(card=>{card.addEventListener('pointermove',e=>{if(innerWidth<900)return;const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(900px) rotateX(${-y*4}deg) rotateY(${x*5}deg) translateY(-2px)`});card.addEventListener('pointerleave',()=>card.style.transform='')});
 const menu=q('.menu'),links=q('.nav-links');menu?.addEventListener('click',()=>links.classList.toggle('open'));qa('.nav-links a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
