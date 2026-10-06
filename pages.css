@@ -3,3 +3,41 @@
 .credentials-page{background:#f5f3ef;color:#171717}.credentials-page .subnav{position:relative}.cred-hero{padding:12vh 6vw 9vh}.cred-hero h1{font:500 clamp(80px,11vw,180px)/.75 var(--display);letter-spacing:-.09em;margin:45px 0}.cred-hero h1 em{font-style:normal;color:#c04427}.cred-lede{font:18px/1.6 var(--body);max-width:550px}.credential-stack{padding:0 6vw 12vh}.credential-stack article{display:grid;grid-template-columns:80px 1fr auto;align-items:center;border-top:1px solid;padding:35px 0;gap:25px}.credential-stack article:last-child{border-bottom:1px solid}.credential-stack b{font:12px var(--mono)}.credential-stack small{font:9px var(--mono);letter-spacing:.14em}.credential-stack h2{font:500 clamp(27px,3vw,48px)/1 var(--display);letter-spacing:-.045em;margin:8px 0}.credential-stack>article>span{font:9px var(--mono);border:1px solid;border-radius:99px;padding:8px 12px}.badge-vault{min-height:100vh;background:#111;color:#eee;display:grid;grid-template-columns:.8fr 1.2fr;align-items:center;padding:8vw 6vw;overflow:hidden}.badge-copy small{font:9px var(--mono);letter-spacing:.2em;color:#888}.badge-copy h2{font:500 clamp(48px,6vw,90px)/.9 var(--display);letter-spacing:-.07em}.badge-copy p{color:#888;max-width:430px}.badge-ring{height:600px;position:relative;transform-style:preserve-3d;perspective:900px;animation:badgefloat 18s linear infinite}.badge-slot{position:absolute;left:50%;top:50%;width:170px;height:170px;margin:-85px;display:grid;place-items:center;border-radius:28px;border:1px solid #ffffff2b;background:linear-gradient(145deg,#262626,#151515);font:500 35px var(--display);box-shadow:0 30px 70px #0008}.badge-slot:nth-child(1){transform:rotateY(0deg) translateZ(300px)}.badge-slot:nth-child(2){transform:rotateY(60deg) translateZ(300px)}.badge-slot:nth-child(3){transform:rotateY(120deg) translateZ(300px)}.badge-slot:nth-child(4){transform:rotateY(180deg) translateZ(300px)}.badge-slot:nth-child(5){transform:rotateY(240deg) translateZ(300px)}.badge-slot:nth-child(6){transform:rotateY(300deg) translateZ(300px)}@keyframes badgefloat{to{transform:rotateY(360deg)}}.certificate-gallery{padding:12vh 6vw}.certificate-gallery>p{font:9px var(--mono);letter-spacing:.2em}.certificate-gallery>div{height:55vh;margin-top:40px;border:1px dashed #999;display:grid;place-items:center;color:#999;font:10px var(--mono);letter-spacing:.15em}
 .portal-grid{display:grid;grid-template-columns:repeat(3,1fr);max-width:1500px;margin:auto;padding:0 6vw 150px;gap:12px}.portal{min-height:460px;padding:30px;text-decoration:none;color:#eee;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;transition:transform .4s,border-color .4s}.portal:hover{transform:translateY(-8px);border-color:#ffffff55}.portal span,.portal i{font:9px var(--mono);letter-spacing:.15em;font-style:normal}.portal h3{font:500 clamp(34px,3.6vw,58px)/.95 var(--display);letter-spacing:-.06em}.portal-work{background:linear-gradient(145deg,#3138ff,#15184f)}.portal-exp{background:#e9e4d9;color:#171717}.portal-cred{background:linear-gradient(145deg,#652d22,#1b0d0a)}
 @media(max-width:800px){.career-row{grid-template-columns:1fr;gap:20px}.exp-intro{grid-template-columns:1fr;gap:20px}.lab-card:nth-child(n){grid-column:1/-1}.lab-orbit{opacity:.35}.badge-vault{grid-template-columns:1fr}.badge-ring{height:450px;transform:scale(.7)}.portal-grid{grid-template-columns:1fr;padding:0 5vw 100px}.portal{min-height:330px}.credential-stack article{grid-template-columns:45px 1fr}.credential-stack>article>span{display:none}}
+/* 2026-10 rendering hardening — dedicated pages */
+.credentials-page,.experience-page,.work-page{min-height:100%;overflow-x:clip}
+.credentials-page .credential-stack{position:relative;z-index:2}
+.credentials-page .credential-stack>a,.credentials-page .credential-stack>article{min-height:150px;background:#f5f3ef;transition:transform .3s ease,background .3s ease}
+.credentials-page .credential-stack>a:hover,.credentials-page .credential-stack>article:hover{background:#ebe5db;transform:translateX(8px)}
+.credentials-page .credential-thumb{position:relative;overflow:hidden;isolation:isolate;box-shadow:0 12px 30px #00000014}
+.credentials-page .credential-thumb:after{content:"";position:absolute;inset:-40%;background:linear-gradient(115deg,transparent 38%,#ffffffaa 48%,transparent 58%);transform:translateX(-80%) rotate(8deg);animation:credentialShine 5.5s ease-in-out infinite;z-index:-1}
+@keyframes credentialShine{45%,100%{transform:translateX(90%) rotate(8deg)}}
+.credentials-page .badge-vault{position:relative;isolation:isolate}
+.credentials-page .badge-vault:before{content:"";position:absolute;width:55vw;aspect-ratio:1;border-radius:50%;right:-12vw;top:5%;background:radial-gradient(circle,#c8ff6720,transparent 65%);filter:blur(10px);z-index:-1}
+.credentials-page .badge-track{min-height:430px;transform-style:preserve-3d}
+.credentials-page .real-badge{position:relative;flex:0 0 auto;backface-visibility:hidden}
+.experience-page .career-row{position:relative;isolation:isolate}
+.experience-page .career-row:before{content:"";position:absolute;left:0;top:0;bottom:0;width:0;background:var(--blue);z-index:-1;transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.experience-page .career-row:hover:before{width:7px}
+.work-page .lab-card:after{content:"";position:absolute;inset:auto -20% -55% -20%;height:70%;background:radial-gradient(ellipse,#ffffff45,transparent 60%);transform:translateY(35%);transition:transform .5s ease;pointer-events:none}
+.work-page .lab-card:hover:after{transform:translateY(0)}
+@media(max-width:800px){
+ .subnav{height:68px;padding:0 20px}.subnav span{font-size:8px}
+ .cred-hero,.exp-hero{padding-left:22px;padding-right:22px}
+ .cred-hero h1{font-size:clamp(62px,20vw,92px);margin:30px 0}
+ .credential-stack{padding:0 22px 70px}
+ .credentials-page .credential-stack>a,.credentials-page .credential-stack>article{grid-template-columns:28px 76px minmax(0,1fr);gap:12px;padding:22px 0;min-height:125px}
+ .credentials-page .credential-stack h2{font-size:clamp(20px,6vw,30px);overflow-wrap:anywhere}
+ .credentials-page .credential-thumb{width:68px;height:58px}
+ .credentials-page .oracle-thumb,.credentials-page .agentic-thumb{height:68px}
+ .badge-vault{padding:80px 22px!important;min-height:auto!important;gap:50px}
+ .badge-track{min-height:330px;display:flex!important;flex-wrap:nowrap!important;justify-content:flex-start!important;overflow-x:auto;scroll-snap-type:x mandatory;padding:40px 28px 65px;gap:24px;-webkit-overflow-scrolling:touch}
+ .real-badge{width:180px!important;scroll-snap-align:center}
+ .real-badge:nth-child(2){transform:none!important}
+ .exp-hero h1{font-size:clamp(48px,15vw,78px)}
+ .career-row{padding:55px 22px}
+ .lab-hero{padding:65px 22px;min-height:70svh}
+ .lab-hero h1{font-size:clamp(62px,19vw,105px)}
+ .lab-grid{padding:0 16px 80px}
+ .lab-card{min-height:390px}
+}
+@media(prefers-reduced-motion:reduce){.credentials-page .credential-thumb:after{animation:none}.credentials-page .real-badge{animation:none!important}}
