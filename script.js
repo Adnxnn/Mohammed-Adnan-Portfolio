@@ -9,3 +9,10 @@ const stage=q('.hero-stage');window.addEventListener('pointermove',e=>{if(!stage
 // Navigation state and subtle scroll progress
 const nav=q('.nav');const setNav=()=>nav?.classList.toggle('scrolled',scrollY>40);addEventListener('scroll',setNav,{passive:true});setNav();
 qa('a[href^="#"]').forEach(a=>a.addEventListener('click',()=>{const id=a.getAttribute('href');if(id&&id.length>1)q(id)?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}));
+
+// Cinematic ambient motion: slow, pointer-responsive and intentionally restrained.
+const world=q('.world-bg'),sculpture=q('.sculpture');let tx=0,ty=0,cx=0,cy=0;
+addEventListener('pointermove',e=>{tx=(e.clientX/innerWidth-.5);ty=(e.clientY/innerHeight-.5)});
+(function ambient(){cx+=(tx-cx)*.035;cy+=(ty-cy)*.035;if(sculpture&&innerWidth>900)sculpture.style.transform=`rotateY(${cx*8}deg) rotateX(${-cy*6}deg) translate3d(${cx*8}px,${cy*8}px,0)`;if(world)world.style.transform=`translate3d(${cx*-10}px,${cy*-8}px,0) scale(1.03)`;requestAnimationFrame(ambient)})();
+// Reveal elements receive a subtle stagger without slowing navigation.
+qa('.project,.cert,.achievement-grid article').forEach((el,i)=>el.style.transitionDelay=((i%4)*70)+'ms');
