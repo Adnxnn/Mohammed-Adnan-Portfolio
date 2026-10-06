@@ -108,3 +108,15 @@ footer{background:#050608}
 @media(min-width:900px){
  .section:not(.hero):not(.impact-profile),.manifesto,.portal-grid,.scroll-3d{content-visibility:auto;contain-intrinsic-size:900px}
 }
+
+/* Performance pass: high impact above the fold, lighter rendering below */
+.impact-profile{content-visibility:auto;contain-intrinsic-size:900px}
+.section,.manifesto,.portal-grid,.scroll-3d,.achievement-world{content-visibility:auto;contain-intrinsic-size:900px}
+@media(max-width:900px){
+ #shader-bg{display:none!important}
+ .aurora,.stars{animation:none!important}
+ .world-bg{transform:none!important}
+ .sculpture{will-change:auto!important}
+ .noise{opacity:.025}
+ .tilt{transform:none!important}
+}
