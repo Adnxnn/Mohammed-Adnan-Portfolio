@@ -120,3 +120,10 @@ footer{background:#050608}
  .noise{opacity:.025}
  .tilt{transform:none!important}
 }
+
+/* Quiet navigation replacing the crowded portal cards */
+.portfolio-paths{max-width:1500px;margin:0 auto;padding:50px 5vw 100px;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.portfolio-paths a{min-height:130px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:18px;color:var(--text);text-decoration:none;padding:20px 24px;transition:background .25s,color .25s}
+.portfolio-paths a+a{border-left:1px solid var(--line)}
+.portfolio-paths span{font:9px var(--mono);color:#707782}.portfolio-paths strong{font:500 clamp(22px,2vw,32px) var(--display);letter-spacing:-.04em}.portfolio-paths i{font-style:normal;font-size:20px}.portfolio-paths a:hover{background:#f0eee8;color:#101114}
+@media(max-width:700px){.portfolio-paths{grid-template-columns:1fr;padding:20px 22px 70px}.portfolio-paths a{min-height:82px;border-left:0!important;border-bottom:0;grid-template-columns:32px 1fr auto;padding:14px 4px}.portfolio-paths a:last-child{border-bottom:1px solid var(--line)}}
