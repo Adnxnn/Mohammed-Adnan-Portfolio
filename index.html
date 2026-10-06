@@ -13,7 +13,7 @@
 </head>
 <body>
   <div class="world-bg" aria-hidden="true"><div class="aurora aurora-one"></div><div class="aurora aurora-two"></div><div class="aurora aurora-three"></div><div class="mesh"></div><div class="stars"></div></div>
-  <div class="noise"></div><div class="cursor-glow"></div>
+  <div class="noise"></div><div class="cursor-glow"></div><div class="scroll-progress" aria-hidden="true"></div>
   <nav class="nav">
     <a class="brand" href="#home"><span>MA</span><b>MOHAMMED ADNAN</b></a>
     <div class="nav-links">
@@ -54,6 +54,18 @@
     </section>
 
     <section class="manifesto"><p class="reveal">ENGINEERING <i>×</i> INTELLIGENCE <i>×</i> DESIGN</p><h2 class="reveal">Not technology for the sake of technology.<br><span>Useful systems, carefully made.</span></h2></section>
+
+    <section class="scroll-3d" id="dimension">
+      <div class="three-sticky">
+        <canvas id="three-canvas" aria-hidden="true"></canvas>
+        <div class="three-vignette"></div>
+        <div class="three-head"><span>02 / DIMENSION</span><span>SCROLL-DRIVEN 3D</span></div>
+        <div class="three-copy three-copy-a"><small>01 — INTELLIGENCE</small><h2>Ideas become<br><em>systems.</em></h2><p>AI architecture, retrieval and automation translated into useful experiences.</p></div>
+        <div class="three-copy three-copy-b"><small>02 — ENGINEERING</small><h2>Systems become<br><em>products.</em></h2><p>Data, interfaces and full-stack engineering shaped into things people can use.</p></div>
+        <div class="three-copy three-copy-c"><small>03 — DELIVERY</small><h2>Products become<br><em>impact.</em></h2><p>Thoughtful execution, measurable outcomes and constant iteration.</p></div>
+        <div class="three-progress"><i></i></div>
+      </div>
+    </section>
 
     <section class="section work" id="work">
       <div class="section-head reveal"><div><div class="section-index">02 / SELECTED WORK</div><h2>Things I've <span>built.</span></h2></div><p>Applied AI and engineering projects focused on real workflows, grounded responses and useful interfaces.</p></div>
@@ -126,4 +138,5 @@
   </main>
   <footer><span>© 2026 MOHAMMED ADNAN A</span><span>DESIGNED & BUILT WITH INTENT</span><a href="#home">BACK TO TOP ↑</a></footer>
   <script src="script.js"></script>
+  <script type="module" src="three-scene.js"></script>
 </body></html>
