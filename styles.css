@@ -90,3 +90,21 @@ footer{background:#050608}
 
 /* Credential asset treatment + homepage dedupe refinement */
 .cert-visual{padding:0!important;text-decoration:none;color:inherit;overflow:hidden;display:flex!important;flex-direction:column;min-height:520px}.cert-picture{height:310px;background:#ebe7de;padding:28px;display:grid;place-items:center;position:relative;overflow:hidden}.cert-paper{width:88%;height:78%;background:#f7f4ee;color:#171717;border:1px solid #d4cec3;box-shadow:0 25px 55px #0003;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transform:rotate(-2deg)}.cert-paper b{font:700 46px var(--display)}.cert-paper strong{font:600 14px var(--display);letter-spacing:.35em}.cert-paper span{text-align:center;font:500 16px/1.25 var(--display)}.cert-paper i{font:9px var(--mono);font-style:normal}.oracle-paper{background:linear-gradient(135deg,#f6f3ed,#e9e2d6)}.oracle-paper:before{content:"";position:absolute;inset:20px;border:1px solid #c9a36b;border-radius:16px}.oracle-seal{width:125px;height:125px;border-radius:50%;border:12px double #b9904b;display:grid;place-items:center;font:600 14px var(--display);z-index:1;background:#f7f5ef}.oracle-paper>span,.oracle-agentic>span{font:600 16px/1.3 var(--display);text-align:center;letter-spacing:.06em;z-index:1}.oracle-agentic{background:radial-gradient(circle,#efe9df,#bda47b)}.cert-meta{padding:26px}.cert-meta small{font:9px var(--mono);letter-spacing:.15em;color:var(--accent)}.cert-meta h3{font-size:28px!important;margin:14px 0!important}.cert-meta>span{font:9px var(--mono);color:#818894}.credentials-page .credential-stack>a,.credentials-page .credential-stack>article{display:grid;grid-template-columns:50px 110px 1fr auto;align-items:center;border-top:1px solid;padding:28px 0;gap:25px;color:inherit;text-decoration:none}.credential-thumb{width:92px;height:72px;border:1px solid #cfc9bf;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}.credential-thumb strong{font:700 28px var(--display)}.credential-thumb small{font:7px var(--mono);letter-spacing:.15em}.anth-thumb{background:#f6f1e9}.oracle-thumb,.agentic-thumb{border-radius:50%;height:92px;background:radial-gradient(circle,#fff 42%,#d3aa59 44%,#777 63%,#eee 65%)}.badge-vault{min-height:80vh}.badge-track{display:flex;align-items:center;justify-content:center;gap:36px;perspective:1000px}.real-badge{width:210px;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;color:#111;background:radial-gradient(circle at 35% 28%,#fff,#eee 42%,#d4aa55 44%,#6e7074 63%,#e5e5e5 66%,#999 73%);box-shadow:0 35px 80px #0009;animation:badgeBob 5s ease-in-out infinite}.real-badge:nth-child(2){animation-delay:-1.5s;transform:translateY(-35px)}.real-badge:nth-child(3){animation-delay:-3s}.real-badge b{font:700 34px var(--display)}.real-badge span{text-align:center;font:600 11px/1.2 var(--display);margin-top:8px}.anth-badge{border-radius:28% 28% 42% 42%;background:#df7656;color:white}.anth-badge b{font-size:52px}@keyframes badgeBob{50%{translate:0 -18px;rotate:0 1 0 12deg}}@media(max-width:800px){.credentials-page .credential-stack>a,.credentials-page .credential-stack>article{grid-template-columns:35px 80px 1fr}.credentials-page .credential-stack>a>span,.credentials-page .credential-stack>article>span{display:none}.credential-thumb{width:70px;height:60px}.oracle-thumb,.agentic-thumb{height:70px}.badge-track{flex-wrap:wrap}.real-badge{width:145px}}
+
+/* Performance + hierarchy pass */
+.impact-profile{position:relative;z-index:3;background:linear-gradient(180deg,#07090c 0%,#0b0e12 100%);border-top:1px solid #ffffff16}
+@media(max-width:899px){
+ #shader-bg{display:none!important}
+ .world-bg{transform:none!important;will-change:auto!important}
+ .aurora{animation:none!important;filter:blur(70px);opacity:.06}
+ .mesh,.stars{animation:none!important}
+ .sculpture{transform:none!important;will-change:auto!important}
+ .halo{animation-duration:28s!important}
+ .liquid-core{animation-duration:12s!important}
+ .tilt{transform:none!important}
+ .hero{min-height:100svh}
+ .hero-stage{will-change:auto!important}
+}
+@media(min-width:900px){
+ .section:not(.hero):not(.impact-profile),.manifesto,.portal-grid,.scroll-3d{content-visibility:auto;contain-intrinsic-size:900px}
+}
