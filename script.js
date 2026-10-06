@@ -16,3 +16,8 @@ addEventListener('pointermove',e=>{tx=(e.clientX/innerWidth-.5);ty=(e.clientY/in
 (function ambient(){cx+=(tx-cx)*.035;cy+=(ty-cy)*.035;if(sculpture&&innerWidth>900)sculpture.style.transform=`rotateY(${cx*8}deg) rotateX(${-cy*6}deg) translate3d(${cx*8}px,${cy*8}px,0)`;if(world)world.style.transform=`translate3d(${cx*-10}px,${cy*-8}px,0) scale(1.03)`;requestAnimationFrame(ambient)})();
 // Reveal elements receive a subtle stagger without slowing navigation.
 qa('.project,.cert,.achievement-grid article').forEach((el,i)=>el.style.transitionDelay=((i%4)*70)+'ms');
+
+const progress=q('.scroll-progress');
+const paintProgress=()=>{if(!progress)return;const max=document.documentElement.scrollHeight-innerHeight;progress.style.width=(max>0?scrollY/max*100:0)+'%'};
+addEventListener('scroll',paintProgress,{passive:true});paintProgress();
+qa('.hero h1 .hero-line,.hero h1 em').forEach((el,i)=>{el.animate([{opacity:0,transform:'translateY(34px)',filter:'blur(8px)'},{opacity:1,transform:'translateY(0)',filter:'blur(0)'}],{duration:900,delay:180+i*110,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'})});
