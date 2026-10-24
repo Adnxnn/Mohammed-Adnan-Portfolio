@@ -38,9 +38,59 @@ const answers=[
   {keys:['deloitte','experience'],text:'At Deloitte USI he supports Talent and U.S. Payroll operations using Python-based processing and validation, KPI reporting, Power BI and Excel, GenAI-assisted documentation and cross-functional delivery. He has received 10 consecutive Stacks recognitions.'},
   {keys:['skill','stack','technology'],text:'Core stack: Python, SQL, JavaScript, React, Node.js, Express, MongoDB, Supabase, Power BI, Tableau, Excel, Git/GitHub, RAG architecture, prompt engineering and cloud AI platforms.'}
 ];
-function respond(text){const low=text.toLowerCase();const hit=answers.find(a=>a.keys.some(k=>low.includes(k)));const msg=hit?hit.text:'Ask about Adnan’s AI projects, QMS, Deloitte experience, technical stack or certifications and I’ll point you to the relevant part of the portfolio.';output.innerHTML+=`<p><span>YOU:</span> ${text.replace(/</g,'&lt;')}</p><p><b>AI:</b> ${msg}</p>`;output.scrollTop=output.scrollHeight}
-q('.command-form')?.addEventListener('submit',e=>{e.preventDefault();const v=input.value.trim();if(!v)return;respond(v);input.value=''});
-qa('.command-suggestions button').forEach(b=>b.addEventListener('click',()=>respond(b.textContent)));
+function getAnswer(text){
+  const low=text.toLowerCase();
+  const hit=answers.find(a=>a.keys.some(k=>low.includes(k)));
+  return hit?hit.text:'Ask about Adnan’s AI projects, QMS, Deloitte experience, technical stack, education, or certifications and I’ll point you to the relevant part of the portfolio.';
+}
+function addMessage(role,text,extra=''){
+  const p=document.createElement('p');
+  p.className='chat-message '+role+(extra?' '+extra:'');
+  const label=document.createElement('span');
+  label.className='chat-label';
+  label.textContent=role==='user'?'YOU':'AI';
+  const body=document.createElement('span');
+  body.className='chat-body';
+  body.textContent=text;
+  p.append(label,body);
+  output.appendChild(p);
+  output.scrollTop=output.scrollHeight;
+  return p;
+}
+let chatBusy=false;
+async function sendQuestion(text){
+  const clean=text.trim();
+  if(!clean||chatBusy)return;
+  chatBusy=true;
+  addMessage('user',clean);
+  input.value='';
+  input.disabled=true;
+  const sendBtn=q('.command-form button');
+  if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='THINKING…'}
+  const typing=addMessage('assistant','Thinking','typing');
+  await new Promise(r=>setTimeout(r,520));
+  typing.remove();
+  addMessage('assistant',getAnswer(clean));
+  input.disabled=false;
+  if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='SEND ↗'}
+  chatBusy=false;
+  input.focus();
+}
+q('.command-form')?.addEventListener('submit',e=>{
+  e.preventDefault();
+  sendQuestion(input.value);
+});
+qa('.command-suggestions button').forEach(b=>b.addEventListener('click',()=>{
+  input.value=b.textContent;
+  input.focus();
+  input.setSelectionRange(input.value.length,input.value.length);
+}));
+input?.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    sendQuestion(input.value);
+  }
+});
 
 // Three.js procedural digital human
 const canvas=q('#world');
