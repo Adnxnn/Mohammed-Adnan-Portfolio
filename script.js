@@ -90,7 +90,7 @@ try{
 }catch(err){console.warn('3D fallback active',err)}
 
 let tx=0,ty=0;addEventListener('pointermove',e=>{tx=(e.clientX/innerWidth-.5);ty=(e.clientY/innerHeight-.5)});
-function render3d(t){
+function render3dLegacy(t){
   if(renderer&&human){
     const time=t*.001;const scroll=scrollY/Math.max(1,document.body.scrollHeight-innerHeight);
     human.rotation.y+=((-.22+tx*.38)-human.rotation.y)*.045;human.rotation.x+=((-ty*.11)-human.rotation.x)*.04;
@@ -104,3 +104,108 @@ addEventListener('resize',()=>{if(renderer&&camera){camera.aspect=innerWidth/inn
 
 // Subtle card depth
 qa('.interactive-card').forEach(card=>{card.addEventListener('pointermove',e=>{if(innerWidth<1000)return;const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform=`perspective(1200px) rotateX(${-y*1.5}deg) rotateY(${x*1.8}deg)`});card.addEventListener('pointerleave',()=>card.style.transform='')});
+
+
+// === CINEMATIC ENGINE V2 ===
+const bars=q('.cinema-bars'), flash=q('.scene-flash'), leak=q('.light-leak');
+setTimeout(()=>bars?.classList.add('active'),900);
+setTimeout(()=>bars?.classList.remove('active'),2600);
+
+// Scene-aware cinematic transitions
+let activeScene=null;
+const cinemaObserver=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    if(activeScene!==e.target){
+      activeScene=e.target;
+      e.target.classList.add('scene-enter');
+      flash?.classList.remove('fire'); void flash?.offsetWidth; flash?.classList.add('fire');
+      const h=e.target.querySelector('h2,h1');
+      h?.classList.add('chromatic'); setTimeout(()=>h?.classList.remove('chromatic'),260);
+    }
+  })
+},{threshold:.52});
+qa('.scene').forEach(s=>cinemaObserver.observe(s));
+
+// Pointer spotlights
+qa('.scene').forEach(s=>s.addEventListener('pointermove',e=>{const r=s.getBoundingClientRect();s.style.setProperty('--spot-x',((e.clientX-r.left)/r.width*100)+'%');s.style.setProperty('--spot-y',((e.clientY-r.top)/r.height*100)+'%')}));
+qa('.interactive-card').forEach(card=>card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect();card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%')}));
+
+// Scroll velocity drives typography and 3D camera
+let lastY=scrollY,lastT=performance.now(),velocity=0,targetVelocity=0;
+const velocityTargets=qa('.manifesto-text,.section-head h2,.project-info h3,.exp h3,.contact h2');
+addEventListener('scroll',()=>{
+  const now=performance.now(),dy=scrollY-lastY,dt=Math.max(16,now-lastT);
+  targetVelocity=clamp(dy/dt,-2.4,2.4);lastY=scrollY;lastT=now;
+},{passive:true});
+function motionLoop(){
+  velocity+=(targetVelocity-velocity)*.1;targetVelocity*=.92;
+  const skew=clamp(velocity*2.2,-3.6,3.6),shift=clamp(velocity*5,-12,12);
+  velocityTargets.forEach((el,i)=>{el.style.transform=`translate3d(0,${shift*(i%2?.25:.45)}px,0) skewY(${skew*(i%2?.3:.55)}deg)`});
+  if(leak) leak.style.transform=`translate3d(${tx*70}px,${ty*45 + velocity*22}px,0) scale(${1+Math.abs(velocity)*.025})`;
+  requestAnimationFrame(motionLoop);
+}motionLoop();
+
+// Cinematic camera pushes on project stages
+const stages=qa('.project-stage,.lab-stage,.credential-art');
+function stageParallax(){
+  const vh=innerHeight;
+  stages.forEach((el,i)=>{
+    const r=el.getBoundingClientRect(),p=clamp((vh-r.top)/(vh+r.height),0,1);
+    const scale=1.035 - Math.abs(.5-p)*.055;
+    const y=(p-.5)*-28;
+    el.style.transform=`translate3d(0,${y}px,0) scale(${scale})`;
+  });
+  requestAnimationFrame(stageParallax);
+}
+if(!reduce) stageParallax();
+
+// Hero title depth / cursor parallax
+const heroLines=qa('.hero h1 .line');
+addEventListener('pointermove',()=>{
+  if(innerWidth<1000)return;
+  heroLines.forEach((line,i)=>{const depth=(i+1)*.9;line.style.transform=`translate3d(${tx*depth*7}px,${ty*depth*4}px,${depth*5}px)`});
+},{passive:true});
+
+// Enhance procedural human: ripple, scan, cinematic scene choreography
+let humanTarget={x:1.9,y:.05,z:0,s:1,rx:0,ry:-.26};
+function sceneHumanState(){
+  const scenes=qa('.scene');let best=0,min=Infinity;
+  scenes.forEach((s,i)=>{const r=s.getBoundingClientRect(),d=Math.abs(r.top+r.height/2-innerHeight/2);if(d<min){min=d;best=i}});
+  const states=[
+    {x:1.9,y:.05,z:0,s:1,rx:0,ry:-.26},
+    {x:2.45,y:.05,z:-.7,s:.88,rx:.03,ry:.35},
+    {x:-2.2,y:.15,z:-1.0,s:.72,rx:-.03,ry:-.55},
+    {x:2.7,y:.1,z:-1.6,s:.55,rx:.08,ry:.8},
+    {x:-2.65,y:.2,z:-1.7,s:.5,rx:-.05,ry:-.75},
+    {x:2.8,y:.15,z:-1.8,s:.48,rx:0,ry:.65},
+    {x:-2.8,y:.1,z:-1.8,s:.44,rx:.04,ry:-.5},
+    {x:1.9,y:.05,z:-.8,s:.85,rx:0,ry:.1}
+  ];
+  humanTarget=states[Math.min(best,states.length-1)];
+}
+addEventListener('scroll',sceneHumanState,{passive:true});sceneHumanState();
+
+const originalRender=render3d;
+render3d=function(t){
+  if(renderer&&human){
+    const time=t*.001;
+    human.position.x+=(humanTarget.x-human.position.x)*.026;
+    human.position.y+=(humanTarget.y-human.position.y)*.028;
+    human.position.z+=(humanTarget.z-human.position.z)*.026;
+    const sc=human.scale.x+(humanTarget.s-human.scale.x)*.025;human.scale.setScalar(sc);
+    human.rotation.y+=(humanTarget.ry + tx*.32-human.rotation.y)*.034;
+    human.rotation.x+=(humanTarget.rx - ty*.08-human.rotation.x)*.032;
+    halo.rotation.z=time*.16;halo.rotation.y=Math.sin(time*.35)*.32;
+    if(particles){
+      particles.material.opacity=.74+Math.sin(time*1.2)*.12;
+      particles.rotation.z=Math.sin(time*.35)*.012;
+    }
+    if(lines) lines.material.opacity=.055+Math.abs(Math.sin(time*.7))*.045;
+    renderer.render(scene,camera);
+  }
+  requestAnimationFrame(render3d);
+};
+
+// Replace prior RAF loop visually by freezing its direct influence
+// (the newer loop above owns cinematic camera choreography)
