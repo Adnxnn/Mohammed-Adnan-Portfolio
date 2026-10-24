@@ -190,6 +190,7 @@ const originalRender=render3d;
 render3d=function(t){
   if(renderer&&human){
     const time=t*.001;
+    if(fluidUniforms){fluidUniforms.uTime.value=time;fluidUniforms.uMouse.value.set(tx+.5,ty+.5);fluidUniforms.uScroll.value=scrollY/Math.max(1,document.body.scrollHeight-innerHeight);}
     human.position.x+=(humanTarget.x-human.position.x)*.026;
     human.position.y+=(humanTarget.y-human.position.y)*.028;
     human.position.z+=(humanTarget.z-human.position.z)*.026;
@@ -209,3 +210,82 @@ render3d=function(t){
 
 // Replace prior RAF loop visually by freezing its direct influence
 // (the newer loop above owns cinematic camera choreography)
+
+
+// === MASTER PROMPT MOTION / INTERACTION ===
+if(window.gsap && window.ScrollTrigger){
+  gsap.registerPlugin(ScrollTrigger);
+  // Keep native accessibility while adding cinematic interpolation.
+  if(window.Lenis && !reduce){
+    const lenis=new Lenis({duration:1.1,smoothWheel:true,wheelMultiplier:.9,touchMultiplier:1.05});
+    lenis.on('scroll',ScrollTrigger.update);
+    gsap.ticker.add(t=>lenis.raf(t*1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+  gsap.utils.toArray('.film-screen,.cloud-stage,.packaging-world,.cert-coverflow').forEach((el,i)=>{
+    gsap.fromTo(el,{clipPath:'inset(10% 8% 10% 8% round 28px)',scale:.94,filter:'blur(10px)'},{clipPath:'inset(0% 0% 0% 0% round 0px)',scale:1,filter:'blur(0px)',duration:1.4,ease:'power4.out',scrollTrigger:{trigger:el,start:'top 82%',once:true}});
+  });
+  gsap.utils.toArray('.arch-node').forEach((n,i)=>gsap.fromTo(n,{opacity:0,scale:.65},{opacity:1,scale:1,duration:.8,delay:i*.08,ease:'back.out(1.7)',scrollTrigger:{trigger:'.cloud-stage',start:'top 74%',once:true}}));
+  gsap.to('.film-title',{yPercent:-14,scrollTrigger:{trigger:'.film-screen',start:'top bottom',end:'bottom top',scrub:1}});
+  gsap.to('.lux-pack.front',{rotateY:34,y:-24,scrollTrigger:{trigger:'.packaging-stage',start:'top 80%',end:'bottom 20%',scrub:1}});
+  gsap.to('.lux-pack.back',{rotateY:-28,y:28,scrollTrigger:{trigger:'.packaging-stage',start:'top 80%',end:'bottom 20%',scrub:1}});
+}
+
+// Certification coverflow
+const covers=qa('.cover-card'),counter=q('.cover-counter b');let coverIndex=0;
+function renderCovers(){
+  covers.forEach((card,i)=>{
+    let d=i-coverIndex;
+    if(d>covers.length/2)d-=covers.length;if(d<-covers.length/2)d+=covers.length;
+    card.dataset.pos=Math.abs(d)>2?'far':String(d);
+    card.classList.toggle('active',d===0);
+  });
+  if(counter)counter.textContent=String(coverIndex+1).padStart(2,'0');
+}
+function moveCover(dir){coverIndex=(coverIndex+dir+covers.length)%covers.length;renderCovers()}
+q('.cover-nav.next')?.addEventListener('click',()=>moveCover(1));q('.cover-nav.prev')?.addEventListener('click',()=>moveCover(-1));
+q('.cert-coverflow')?.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)<15)return;e.preventDefault();moveCover(e.deltaY>0?1:-1)},{passive:false});
+let coverStart=0;q('.cert-coverflow')?.addEventListener('pointerdown',e=>coverStart=e.clientX);q('.cert-coverflow')?.addEventListener('pointerup',e=>{const d=e.clientX-coverStart;if(Math.abs(d)>45)moveCover(d<0?1:-1)});
+renderCovers();
+
+qa('.share-cert').forEach(btn=>btn.addEventListener('click',async e=>{
+  const card=e.currentTarget.closest('.cover-card'),title=card?.dataset.shareTitle||'Mohammed Adnan A certification';
+  const data={title, text:`${title} — Mohammed Adnan A`, url:location.href+'#credentials'};
+  try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(data.text+' '+data.url);btn.textContent='COPIED ✓';setTimeout(()=>btn.textContent='SHARE ↗',1400)}}catch{}
+}));
+
+// Packaging flavor states
+qa('.packaging-switch button').forEach(btn=>btn.addEventListener('click',()=>{
+  qa('.packaging-switch button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  const f=btn.dataset.pack,front=q('.lux-pack.front'),back=q('.lux-pack.back');
+  const themes={
+    biryani:['linear-gradient(150deg,#b62920,#47100d 50%,#102717 51%,#08140d)','BIRYANI<br>MASALA','PURE FLAVOUR · ENDLESS TASTE'],
+    kebab:['linear-gradient(150deg,#7e1712,#2a0706 50%,#101010 51%,#030303)','CHICKEN<br>KEBAB','AUTHENTIC · BOLD · SMOKY'],
+    green:['linear-gradient(150deg,#33633b,#102717 52%,#d1b56d 53%,#5d4616)','HERITAGE<br>BLEND','TRADITION · CRAFT · FLAVOUR']
+  };
+  const [bg,name,tag]=themes[f];front.style.background=bg;front.querySelector('b').innerHTML=name;front.querySelector('small').textContent=tag;
+  if(window.gsap)gsap.fromTo(front,{rotateY:-70,scale:.82,opacity:.35},{rotateY:0,scale:1,opacity:1,duration:.75,ease:'power3.out'});
+}));
+
+// WebGL liquid light field behind the digital human
+let fluidUniforms=null,fluidPlane=null;
+if(scene && renderer){
+  const vert=`varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
+  const frag=`precision highp float;varying vec2 vUv;uniform float uTime;uniform vec2 uMouse;uniform float uScroll;
+    float blob(vec2 p,vec2 c,float s){return s/(length(p-c)*8.0+0.35);}
+    void main(){
+      vec2 uv=vUv;vec2 p=uv-.5;p.x*=1.78;
+      float t=uTime*.16;
+      float n=sin((p.x+sin(p.y*5.0+t))*6.0+t)*.5+.5;
+      n+=sin((p.y+cos(p.x*4.0-t))*7.0-t)*.35;
+      float b=blob(p,vec2((uMouse.x-.5)*.8,(uMouse.y-.5)*-.45),.55);
+      vec3 c1=vec3(.035,.025,.045),c2=vec3(.32,.08,.06),c3=vec3(.19,.12,.45);
+      vec3 col=mix(c1,c2,smoothstep(.25,1.25,n+b*.35));
+      col=mix(col,c3,smoothstep(.8,1.8,b+n*.45+uScroll*.3));
+      float vign=smoothstep(.95,.22,length(p));
+      gl_FragColor=vec4(col,vign*.32);
+    }`;
+  fluidUniforms={uTime:{value:0},uMouse:{value:new THREE.Vector2(.5,.5)},uScroll:{value:0}};
+  fluidPlane=new THREE.Mesh(new THREE.PlaneGeometry(14,8),new THREE.ShaderMaterial({vertexShader:vert,fragmentShader:frag,uniforms:fluidUniforms,transparent:true,depthWrite:false,depthTest:false}));
+  fluidPlane.position.z=-3.5;fluidPlane.renderOrder=-10;scene.add(fluidPlane);
+}
