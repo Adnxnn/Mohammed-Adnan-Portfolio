@@ -339,3 +339,23 @@ if(scene && renderer){
   fluidPlane=new THREE.Mesh(new THREE.PlaneGeometry(14,8),new THREE.ShaderMaterial({vertexShader:vert,fragmentShader:frag,uniforms:fluidUniforms,transparent:true,depthWrite:false,depthTest:false}));
   fluidPlane.position.z=-3.5;fluidPlane.renderOrder=-10;scene.add(fluidPlane);
 }
+
+
+// === CERTIFICATION HORIZONTAL RAIL ===
+const certRail=q('.credentials-rail');
+if(certRail){
+  const prev=q('.cert-scroll-prev'),next=q('.cert-scroll-next'),prog=q('.rail-progress i');
+  const step=()=>Math.min(certRail.clientWidth*.82,560);
+  prev?.addEventListener('click',()=>certRail.scrollBy({left:-step(),behavior:'smooth'}));
+  next?.addEventListener('click',()=>certRail.scrollBy({left:step(),behavior:'smooth'}));
+  certRail.addEventListener('wheel',e=>{
+    if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){e.preventDefault();certRail.scrollLeft+=e.deltaY}
+  },{passive:false});
+  let down=false,startX=0,startScroll=0;
+  certRail.addEventListener('pointerdown',e=>{down=true;startX=e.clientX;startScroll=certRail.scrollLeft;certRail.classList.add('dragging');certRail.setPointerCapture?.(e.pointerId)});
+  certRail.addEventListener('pointermove',e=>{if(!down)return;certRail.scrollLeft=startScroll-(e.clientX-startX)});
+  const stopDrag=()=>{down=false;certRail.classList.remove('dragging')};
+  certRail.addEventListener('pointerup',stopDrag);certRail.addEventListener('pointercancel',stopDrag);certRail.addEventListener('pointerleave',()=>{if(down)stopDrag()});
+  const updateProg=()=>{const max=certRail.scrollWidth-certRail.clientWidth;const p=max>0?certRail.scrollLeft/max:0;if(prog)prog.style.transform='scaleX('+p+')'};
+  certRail.addEventListener('scroll',updateProg,{passive:true});addEventListener('resize',updateProg);updateProg();
+}
