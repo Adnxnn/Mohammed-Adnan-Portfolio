@@ -2,7 +2,7 @@
 const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>Array.from(c.querySelectorAll(s));
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 let mode=reduce?"lite":"cinematic";
-function setMode(m){mode=m;document.body.dataset.mode=m;$("#mode-button").firstChild.textContent=m.toUpperCase()+" ";$("#mode-menu").hidden=true;drawAvatar();}setMode(mode);
+function setMode(m){mode=m;document.body.dataset.mode=m;$("#mode-button").firstChild.textContent=m.toUpperCase()+" ";$("#mode-menu").hidden=true;}setMode(mode);
 $("#mode-button").onclick=()=>$("#mode-menu").hidden=!$("#mode-menu").hidden;
 $$("[data-mode]").filter(x=>x.tagName==="BUTTON").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 const progress=$(".top-progress");function scrollUI(){let r=document.documentElement;progress.style.width=(r.scrollTop/(r.scrollHeight-r.clientHeight||1)*100)+"%";}
